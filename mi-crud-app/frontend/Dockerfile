@@ -3,7 +3,7 @@ FROM node:18 as build
 
 WORKDIR /app
 COPY package*.json ./
-COPY . .
+COPY . ./
 RUN npm install
 RUN npm run build
 
