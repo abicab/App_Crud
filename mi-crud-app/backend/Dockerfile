@@ -4,15 +4,17 @@ FROM node:18
 # Establecer directorio de trabajo
 WORKDIR /app
 
-# Copiar archivos
+# Copiar solo los archivos de dependencias primero
 COPY package*.json ./
-COPY . .
 
 # Instalar dependencias
 RUN npm install
 
-# Exponer el puerto (ajusta según tu app)
-EXPOSE 3000
+# Copiar el resto de los archivos
+COPY . .
+
+# Exponer el puerto 8080
+EXPOSE 8080
 
 # Comando para iniciar el backend
 CMD ["npm", "run", "start"]
