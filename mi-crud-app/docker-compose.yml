@@ -3,25 +3,24 @@ version: '3.8'
 services:
   frontend:
     build:
-      context: ./mi-crud-app/frontend  # Ruta al Dockerfile del frontend
+      context: ./frontend  # Ruta corregida: ya estás dentro de mi-crud-app
     ports:
-      - "3000:3000"  # Exponer el puerto 3000 del contenedor al puerto 3000 del host
+      - "3000:3000"  # Exponer el puerto del frontend
     depends_on:
-      - backend  # Asegura que el backend esté listo antes de iniciar el frontend
+      - backend
     networks:
       - app-network
 
   backend:
     build:
-      context: ./mi-crud-app/backend  # Ruta al Dockerfile del backend
+      context: ./backend  # Ruta corregida al Dockerfile del backend
     ports:
-      - "8080:8080"  # Exponer el puerto 8080 del contenedor al puerto 8080 del host
+      - "8080:8080"  # Exponer el puerto del backend
     environment:
-      - NODE_ENV=production  # Variables de entorno si es necesario
+      - NODE_ENV=production
     networks:
       - app-network
 
-  # Si necesitas una base de datos, podrías agregarla así:
   db:
     image: mysql:5.7
     environment:
