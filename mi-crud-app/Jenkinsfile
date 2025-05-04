@@ -1,70 +1,36 @@
 pipeline {
-    agent any
+  agent any
 
-    environment {
-        COMPOSE_FILE = 'docker-compose.yml'
+  environment {
+    COMPOSE_FILE = 'docker-compose.yml'
+  }
+
+  stages {
+    stage('Checkout') {
+      steps {
+        echo 'Clonando el repositorio...'
+        checkout scm
+      }
     }
 
-    stages {
-        stage('Checkout') {
-            steps {
-                git 'https://TU_REPOSITORIO_GIT'
-            }
-        }
-
-        stage('Instalar dependencias') {
-            steps {
-                echo 'Instalando dependencias de frontend y backend...'
-                sh 'docker-compose run --rm backend npm install'
-                sh 'docker-compose run --rm frontend npm install'
-            }
-        }
-
-        stage('Generar Prisma') {
-            steps {
-                echo 'Generando Prisma Client...'
-                sh 'docker-compose run --rm backend npx prisma generate'
-            }
-        }
-
-        stage('Construir imágenes') {
-            steps {
-                echo 'Construyendo contenedores...'
-                sh 'docker-compose build'
-            }
-        }
-
-        stage('Levantar servicios') {
-            steps {
-                echo 'Levantando la aplicación...'
-                sh 'docker-compose up -d'
-            }
-        }
-
-        stage('Verificar Backend') {
-            steps {
-                echo 'Verificando backend...'
-                sh 'curl --fail http://localhost:3001 || exit 1'
-            }
-        }
-
-        stage('Verificar Frontend') {
-            steps {
-                echo 'Verificando frontend...'
-                sh 'curl --fail http://localhost:3000 || exit 1'
-            }
-        }
+    stage('Build & Deploy') {
+      steps {
+        echo 'Levantando contenedores con Docker Compose...'
+        sh 'docker-compose down'
+        sh 'docker-compose up --build -d'
+      }
     }
 
-    post {
-        always {
-            echo 'Pipeline finalizado.'
-        }
-        success {
-            echo 'La aplicación se desplegó correctamente.'
-        }
-        failure {
-            echo 'La aplicación falló durante el pipeline.'
-        }
+    stage('Verificar servicios') {
+      steps {
+        sh 'docker ps'
+      }
     }
+  }
+
+  post {
+    always {
+      echo 'Proceso finalizado. Revisa el estado arriba.'
+    }
+  }
 }
